@@ -3,6 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import numpy as np
+import pandas_datareader.data as web
 
 # simple moving average predict
 def sma_predict (data) :
@@ -36,36 +37,36 @@ def rsi_predict (data):
     pd.stats.moments.ewma(d, com=period-1, adjust=False)
     return 100 - 100 / (1 + rs)
 
-def get_realtime_price () :
+def get_realtime_price (stock_name,start, end) :
     # This is sample json format I want to create in future
     # location = "input_price.json"
     # with open(location) as data_file:
     #     price = json.load(data_file)['MSFT']
     # print(price[0])
+
     # set to dataframe to make easy using numpy and pandas library
     # data = pd.DataFrame.insert(0,'MSFT',price[0])
-    # I use this to get sample data, there are many sample stock price here,
-    # but I just can get sample price stock daily , not every 10 seconds
-    data = pd.read_pickle('./data.pkl')
-    data.head(20)
+    # data = pd.DataFrame.insert(0,'MSFT',price[1])
+
+    # get sample data from yahoo price
+    get_price = web.DataReader(stock_name,'yahoo',start,end)
+
+    #fills columns, calculates SMA and EMA using pandas library
+    data = get_price['Adj Close']
 
     return data
 
-def generate_matplotlib (real_price, sma, ema, macd, rsi) :
+def generate_matplotlib (real_price, sma, ema, macd, rsi, start_date, end_date) :
     my_year_month_fmt = mdates.DateFormatter('%y-%m-%d')
-    start_date = '2016-01-03'
-    end_date = '2016-02-28'
 
-    fig = plt.figure(figsize=(15, 9))
+    fig = plt.figure(figsize=(10, 4))
     ax = fig.add_subplot(1, 1, 1)
 
-    ax.plot(real_price.ix[start_date:end_date, :].index, real_price.ix[start_date:end_date, 'MSFT'], label='PRICE')
-    ax.plot(sma.ix[start_date:end_date, :].index, sma.ix[start_date:end_date, 'MSFT'],
-            label='20-days SMA')
-    ax.plot(ema.ix[start_date:end_date, :].index, ema.ix[start_date:end_date, 'MSFT'],
-            label='20-days EMA')
-    ax.plot(macd.ix[start_date:end_date, :].index, macd.ix[start_date:end_date, 'MSFT'], label='MACD 12 EMA - 26 EMA')
-    ax.plot(rsi.ix[start_date:end_date, :].index, rsi.ix[start_date:end_date, 'MSFT'], label='RSI')
+    ax.plot(real_price.ix[start_date:end_date].index, real_price.ix[start_date:end_date], label='PRICE')
+    ax.plot(sma.ix[start_date:end_date].index, sma.ix[start_date:end_date],label='20-days SMA')
+    ax.plot(ema.ix[start_date:end_date].index, ema.ix[start_date:end_date],label='20-days EMA')
+    ax.plot(macd.ix[start_date:end_date].index, macd.ix[start_date:end_date],label='MACD')
+    ax.plot(rsi.ix[start_date:end_date].index, rsi.ix[start_date:end_date],label='RSI')
 
     ax.legend(loc='best')
     ax.set_ylabel('Price in $')
@@ -73,7 +74,7 @@ def generate_matplotlib (real_price, sma, ema, macd, rsi) :
     plt.show()
 
 # this is output of json format
-def json_output (data, stock_price) :
+def json_output (data, stock_name) :
     # format
     '''
     {
@@ -88,20 +89,39 @@ def json_output (data, stock_price) :
         }
     }
     '''
+    index_loop = 0
+    high = 0
+    low = 0
+    previous = 0
+    last = 0
+    open = 0
+    close = 0
+    for index in data.index :
+        if data[index_loop] >= 0 :
+            date = str(index).split(' ')[0]
+            price = data[index_loop]
+            # print(str(price)+' date : '+date)
+            # create json here
+            data_value = {stock_name:{"DATE":date,"HIGH":high,"LOW":low,"PREVIOUS":previous,"LAST":price,"OPEN":open,"CLOSE":close}}
+            print(json.dumps(data_value))
 
-    prediction_data = data.get('MSFT')[15]
-    data_value = {"MSFT":{"DATE":"2017-07-01","HIGH":0,"LOW":0,"LAST":data,"OPEN":0,"CLOSE":1000}}
-    # because in RSI prediction result can be seen after 15 days, I set period into 14 days
-    print(json.dumps(data_value))
+            previous = last
+            if last > high :
+                high = last
+            if last < low or low == 0 :
+                low = last
+            if open == 0 :
+                open = data[index_loop]
 
+        index_loop = index_loop + 1
+    close = data[index_loop - 1]
+    data_value = {stock_name:{"DATE":date,"HIGH":high,"LOW":low,"PREVIOUS":0,"LAST":price,"OPEN":open,"CLOSE":close}}
+    print("close price : "+json.dumps(data_value))
 
-    # json_output = None
-    # for d in data :
-    #     print (d)
-    # return None
-
+start_date = '2016-01-03'
+end_date = '2016-05-28'
 # get realtime data first
-preprocessing_data = get_realtime_price()
+preprocessing_data = get_realtime_price('MSFT', start_date, end_date)
 # get sma prediction
 sma = sma_predict(preprocessing_data)
 # get ema prediction
@@ -114,8 +134,12 @@ rsi = rsi_predict(preprocessing_data)
 # # create chart to see result of prediction
 # # this is real price chart from sample data, I got real sample data of real stock price
 # # we can easily see price prediction bullish or bealish by see the graph up or down day by day (graph update every day)
-# generate_matplotlib(preprocessing_data, sma, ema, macd, rsi)
+# generate_matplotlib(preprocessing_data, sma, ema, macd, rsi, start_date, end_date)
 
-# this is sample for json output format
-json_output(preprocessing_data,'MSFT')
-json_output(rsi,'MSFT')
+# print(preprocessing_data.head(20))
+# print(sma.head(20))
+# print(ema.head(20))
+# print(macd.head(20))
+# print(rsi.head(20))
+
+json_output(sma.head(30),'MSFT')
