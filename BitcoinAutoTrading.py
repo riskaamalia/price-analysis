@@ -138,7 +138,6 @@ def order_sell (profit, total_loop, buy_price) :
         is_buy[2] = update_price
         return is_buy
 
-    is_buy[1] = 'True'
     return is_buy
 
 def count_mean (price_dict, loop) :
