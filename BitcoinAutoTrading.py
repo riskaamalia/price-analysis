@@ -14,15 +14,14 @@ import json
 from urllib.request import urlopen
 from time import sleep
 import datetime
-import pandas as pd
-import numpy as np
 
 # get price from vip.bitoin.co.id every 10 sec
-def get_10seconds_price () :
+def get_10seconds_price (total_loop) :
 
     loop = 0
     prices_dict = {}
-    while loop < 20 :
+    previous_price = 0
+    while loop < total_loop :
         url_ticker = 'https://vip.bitcoin.co.id/api/btc_idr/ticker'
         success = False
         while success is False:
@@ -39,22 +38,115 @@ def get_10seconds_price () :
         last_price = full_result['last']
         last_time = datetime.datetime.fromtimestamp(int(full_result['server_time'])).strftime('%Y-%m-%d %H:%M:%S')
 
-        prices_dict[last_time] = last_price
-        print('Time : '+last_time+' Last Price : '+prices_dict[last_time])
+        if previous_price != last_price :
+            prices_dict[last_time] = last_price
+            print('Time : '+last_time+' Last Price : '+prices_dict[last_time])
+            loop = loop + 1
 
-        sleep(10)
+        sleep(5)
+
+        previous_price = last_price
+
+    prices_dict['high'] = full_result['high']
+    prices_dict['low'] = full_result['low']
+    return prices_dict
+
+def order_buy (profit, total_loop) :
+    is_buy = {}
+    last_price = 0
+    first_price = 0
+    prices_dict = get_10seconds_price(total_loop)
+    mean_price = count_mean(prices_dict, total_loop)
+    print("mean price : "+str(mean_price))
+
+    loop = 0
+    for value in prices_dict.values() :
+        if loop == 0 :
+            first_price = int(value)
+        if loop == total_loop - 1 :
+            last_price = int(value)
         loop = loop + 1
-    prices_series_20 = pd.Series(prices_dict)
-    prices_dataframe = pd.DataFrame({'price':prices_series_20})
-    print(prices_dataframe)
+
+    high_price = int(prices_dict['high'])
+    # prepare to buy
+    if first_price < mean_price :
+        print('bullish detected.. price is up wuhuuuu')
+    else :
+        print('bearish detected.. price is down :(')
+
+    # prepare to initialize buy
+    if high_price - last_price >= profit:
+        # go buy in this price
+        update_price = 0
+        while update_price < last_price :
+            print('GET ready to buy ....')
+            update_price = count_mean(get_10seconds_price(3),3)
+        is_buy = True
+        print('FINALLY buy in price : '+str(update_price))
+        is_buy[1] = 'True'
+        is_buy[2] = update_price
+        return is_buy
+
+    is_buy[1] = 'False'
+    return is_buy
+
+def order_sell (profit, total_loop, buy_price) :
+    is_buy = {}
+    last_price = 0
+    first_price = 0
+    prices_dict = get_10seconds_price(total_loop)
+    mean_price = count_mean(prices_dict, total_loop)
+    print("mean price : "+mean_price)
+
+    loop = 0
+    for value in prices_dict.values() :
+        if loop == 0 :
+            first_price = int(value)
+        if loop == total_loop - 1 :
+            last_price = int(value)
+        loop = loop + 1
+
+    # prepare to sell or buy
+    if first_price < mean_price :
+        print('bullish detected.. price is up wuhuuuu')
+    else :
+        print('bearish detected.. price is down :(')
+
+    # prepare to sell
+    if last_price - buy_price >= profit:
+        # go sell in this price
+        update_price = 0
+        while update_price > last_price :
+            print('GET ready to sell ....')
+            update_price = count_mean(get_10seconds_price(3),3)
+        print('FINALLY sell in price : '+str(update_price))
+        is_buy[1] = 'False'
+        is_buy[2] = update_price
+        return is_buy
+
+    is_buy[1] = 'True'
+    return is_buy
+
+def count_mean (price_dict, loop) :
+    total = 0
+    l = 0
+    values = price_dict.values()
+    for value in values :
+        if l < loop :
+            total = total + int(value)
+            l = l + 1
+
+    return total / loop
+
+# for first time, I set order buy
+is_buy = order_buy(100,5)
+while True :
+    if 'True' in is_buy[1] :
+        print('waiting for selling signal ..............................')
+        is_buy = order_sell(100,5, is_buy[2])
+    else :
+        print('waiting for buying signal ..............................')
+        is_buy = order_buy(100, 5)
 
 
-# analyze bearish or bullish
-def price_analysis () :
-    return None
 
-def place_order () :
-    return None
-
-
-get_10seconds_price()
