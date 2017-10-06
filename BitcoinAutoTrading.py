@@ -89,7 +89,6 @@ def order_buy (profit, total_loop) :
                 last_price = update_price - 1
             previous = update_price
 
-        is_buy = True
         print('FINALLY buy in price : '+str(update_price))
         is_buy[1] = 'True'
         is_buy[2] = update_price
@@ -154,14 +153,14 @@ def count_mean (price_dict, loop) :
     return total / loop
 
 # for first time, I set order buy
-is_buy = order_buy(100,5)
+is_buy = order_buy(10000,5)
 while True :
     if 'True' in is_buy[1] :
         print('waiting for selling signal ..............................')
-        is_buy = order_sell(100,5, is_buy[2])
+        is_buy = order_sell(10000,5, is_buy[2])
     else :
         print('waiting for buying signal ..............................')
-        is_buy = order_buy(100, 5)
+        is_buy = order_buy(10000,5)
 
-
+# low di update jam 6 sore
 
