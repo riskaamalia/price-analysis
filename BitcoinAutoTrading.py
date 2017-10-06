@@ -68,6 +68,7 @@ def order_buy (profit, total_loop) :
         loop = loop + 1
 
     high_price = int(prices_dict['high'])
+    lowest_price = int(prices_dict['low'])
     # prepare to buy
     if first_price < mean_price :
         print('bullish detected.. price is up wuhuuuu')
@@ -77,10 +78,17 @@ def order_buy (profit, total_loop) :
     # prepare to initialize buy
     if high_price - last_price >= profit:
         # go buy in this price
-        update_price = 0
+        update_price = count_mean(get_10seconds_price(3),3)
+        previous = last_price
         while update_price < last_price :
+            # stop looping until get to lowest price
             print('GET ready to buy ....')
-            update_price = count_mean(get_10seconds_price(3),3)
+            if previous > update_price :
+                update_price = count_mean(get_10seconds_price(3),3)
+            else :
+                last_price = update_price - 1
+            previous = update_price
+
         is_buy = True
         print('FINALLY buy in price : '+str(update_price))
         is_buy[1] = 'True'
@@ -115,10 +123,17 @@ def order_sell (profit, total_loop, buy_price) :
     # prepare to sell
     if last_price - buy_price >= profit:
         # go sell in this price
-        update_price = 0
+        update_price = count_mean(get_10seconds_price(3),3)
+        previous = last_price
         while update_price > last_price :
+            # stop looping until get to highest price
             print('GET ready to sell ....')
-            update_price = count_mean(get_10seconds_price(3),3)
+            if previous < update_price :
+                update_price = count_mean(get_10seconds_price(3),3)
+            else :
+                last_price = update_price + 1
+            previous = update_price
+
         print('FINALLY sell in price : '+str(update_price))
         is_buy[1] = 'False'
         is_buy[2] = update_price
