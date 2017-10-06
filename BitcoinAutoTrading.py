@@ -103,7 +103,7 @@ def order_sell (profit, total_loop, buy_price) :
     first_price = 0
     prices_dict = get_10seconds_price(total_loop)
     mean_price = count_mean(prices_dict, total_loop)
-    print("mean price : "+mean_price)
+    print("mean price : "+str(mean_price))
 
     loop = 0
     for value in prices_dict.values() :
@@ -154,9 +154,11 @@ def count_mean (price_dict, loop) :
 
 # for first time, I set order buy
 is_buy = order_buy(10000,5)
+print('is buy : .... '+str(is_buy))
 while True :
     if 'True' in is_buy[1] :
         print('waiting for selling signal ..............................')
+        print('is sell : .... '+str(is_buy))
         is_buy = order_sell(10000,5, is_buy[2])
     else :
         print('waiting for buying signal ..............................')
