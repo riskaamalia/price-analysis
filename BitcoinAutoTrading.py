@@ -4,8 +4,6 @@ Bot Trading bitcoin Indonesia dengan bahasa pemrograman python
 python 3.6
 This project runs automatic trading bitcoin. Bitcoin price got from vip.bitcoin.co.id
 Program ini menjalakankan bot trading bitcoin secara otomatis. Sumber pantauan harga dari vip.bitcoin.co.id
-
-
 If you want to get full code, you can contact me.
 email : riskaamalia.mail@gmail.com
 linkedin : linkedin.com/in/riskaamalia
@@ -167,4 +165,3 @@ while True :
         is_buy = order_buy(100000,5)
 
 # low di update jam 6 sore
-
