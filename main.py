@@ -39,6 +39,7 @@ def rsi_predict (data):
 def get_realtime_price (stock_name,start, end) :
     # get sample data from yahoo price
     get_price = web.DataReader(stock_name,'yahoo',start,end)
+    print(get_price)
     data = get_price['Adj Close']
 
     return data
@@ -51,9 +52,9 @@ def generate_matplotlib (real_price, sma, ema, macd, rsi, start_date, end_date) 
 
     # if you want to see all of result, just uncomment them
     ax.plot(real_price.ix[start_date:end_date].index, real_price.ix[start_date:end_date], label='PRICE')
-    # ax.plot(sma.ix[start_date:end_date].index, sma.ix[start_date:end_date],label='20-days SMA')
-    # ax.plot(ema.ix[start_date:end_date].index, ema.ix[start_date:end_date],label='20-days EMA')
-    # ax.plot(macd.ix[start_date:end_date].index, macd.ix[start_date:end_date],label='MACD')
+    ax.plot(sma.ix[start_date:end_date].index, sma.ix[start_date:end_date],label='20-days SMA')
+    ax.plot(ema.ix[start_date:end_date].index, ema.ix[start_date:end_date],label='20-days EMA')
+    ax.plot(macd.ix[start_date:end_date].index, macd.ix[start_date:end_date],label='MACD')
     ax.plot(rsi.ix[start_date:end_date].index, rsi.ix[start_date:end_date],label='RSI')
 
     ax.legend(loc='best')
