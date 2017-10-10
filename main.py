@@ -5,23 +5,23 @@ import matplotlib.dates as mdates
 import numpy as np
 import pandas_datareader.data as web
 
-# Using Pandas to calculate a 20-days (window=20) with Simple Moving Average predict
+# simple moving average predict
 def sma_predict (data) :
     sma_result = data.rolling(window=20).mean()
     return sma_result
 
 
-# Using Pandas to calculate a 20-days (span=20, adjust=False is for recursive) with Exponential Moving Average Predict
+# Using Pandas to calculate a 20-days span EMA. adjust=False is for recursive
 def ema_predict (data) :
     ema_short = data.ewm(span=20, adjust=False).mean()
     return ema_short
 
-# Moving Average Convergence Divergence Predict using common formula (EMA fast and EMA slow)
+# moving average convergence divergence predict
 def macd_predict (data) :
     macd = data.ewm(span=12, adjust=False).mean() - data.ewm(span=26, adjust=False).mean()
     return macd
 
-# Stochastic RSI Predict (Calculating gap between gains and losses)
+# stochastic RSI algorithm
 def rsi_predict (data):
     period = 14
     delta = data.diff().dropna()
