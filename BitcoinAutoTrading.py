@@ -70,21 +70,26 @@ def order_buy (profit, total_loop) :
     # prepare to buy
     if first_price < mean_price :
         print('bullish detected.. price is up wuhuuuu')
+        is_up = True
     else :
         print('bearish detected.. price is down :(')
+        is_up = False
 
     # prepare to initialize buy
     if high_price - last_price >= profit:
         # go buy in this price
-        update_price = count_mean(get_10seconds_price(3),3)
         previous = last_price
-        while update_price < last_price :
+        update_price = last_price
+        while is_up == False :
             # stop looping until get to lowest price
+            update_price = count_mean(get_10seconds_price(5),5)
             print('GET ready to buy ....')
             if previous > update_price :
-                update_price = count_mean(get_10seconds_price(3),3)
+                print('still bearish ...... :(')
+                is_up = False
             else :
-                last_price = update_price - 1
+                print("Yepeee bullish, ready to buy ...")
+                is_up = True
             previous = update_price
 
         print('FINALLY buy in price : '+str(update_price))
@@ -115,21 +120,26 @@ def order_sell (profit, total_loop, buy_price) :
     # prepare to sell or buy
     if first_price < mean_price :
         print('bullish detected.. price is up wuhuuuu')
+        is_up = True
     else :
         print('bearish detected.. price is down :(')
+        is_up = False
 
-    # prepare to sell
+    # prepare to initialize sell
     if last_price - buy_price >= profit:
         # go sell in this price
-        update_price = count_mean(get_10seconds_price(3),3)
         previous = last_price
-        while update_price > last_price :
+        update_price = last_price
+        while is_up == True :
             # stop looping until get to highest price
+            update_price = count_mean(get_10seconds_price(5),5)
             print('GET ready to sell ....')
-            if previous < update_price :
-                update_price = count_mean(get_10seconds_price(3),3)
+            if previous > update_price :
+                print('still bearish, prepare to sell')
+                is_up = False
             else :
-                last_price = update_price + 1
+                print("Yepeee bullish, waiting to get more profit ...")
+                is_up = True
             previous = update_price
 
         print('FINALLY sell in price : '+str(update_price))
