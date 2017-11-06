@@ -13,6 +13,7 @@ from urllib.request import urlopen
 from time import sleep
 import datetime
 
+status_price = 0
 # get price from vip.bitoin.co.id every 10 sec
 def get_10seconds_price (total_loop) :
 
@@ -94,10 +95,10 @@ def order_buy (profit, total_loop) :
                 is_up = True
 
 
-        update_price = previous + 200000
-        print('FINALLY buy in price : '+str(update_price))
+        status_price = previous - 130000
+        print('FINALLY buy in price : '+str(status_price))
         is_buy[1] = 'True'
-        is_buy[2] = update_price
+        is_buy[2] = status_price
         return is_buy
 
     is_buy[1] = 'False'
@@ -132,7 +133,6 @@ def order_sell (profit, total_loop, buy_price) :
     if last_price - buy_price >= profit:
         # go sell in this price
         previous = last_price
-        update_price = last_price
         while is_up == True :
             # stop looping until get to highest price
             update_price = count_mean(get_10seconds_price(5),5)
@@ -144,10 +144,10 @@ def order_sell (profit, total_loop, buy_price) :
                 print("Yepeee bullish, waiting to get more profit ...")
                 is_up = True
 
-        update_price = previous + 200000
-        print('FINALLY sell in price : '+str(update_price))
+        status_price = previous + 130000
+        print('FINALLY sell in price : '+str(status_price))
         is_buy[1] = 'False'
-        is_buy[2] = update_price
+        is_buy[2] = status_price
         return is_buy
 
     is_buy[1] = 'True'
@@ -166,13 +166,13 @@ def count_mean (price_dict, loop) :
     return total / loop
 
 # for first time, I set order buy
-is_buy = order_buy(1000000,5)
+is_buy = order_buy(800000,5)
 while True :
     print('is buy : .... '+str(is_buy))
     if 'True' in is_buy[1] :
         print('waiting for selling signal ..............................')
         print('is sell : .... '+str(is_buy))
-        is_buy = order_sell(1000000,5, is_buy[2])
+        is_buy = order_sell(800000,5, is_buy[2])
     else :
         print('waiting for buying signal ..............................')
         is_buy = order_buy(800000,5)
