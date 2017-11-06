@@ -93,10 +93,9 @@ def order_buy (profit, total_loop) :
             else :
                 print("Yepeee bullish, ready to buy ...")
                 is_up = True
+                status_price = previous - 180000
+                print('FINALLY buy in price : ' + str(status_price))
 
-
-        status_price = previous - 130000
-        print('FINALLY buy in price : '+str(status_price))
         is_buy[1] = 'True'
         is_buy[2] = status_price
         return is_buy
@@ -140,12 +139,12 @@ def order_sell (profit, total_loop, buy_price) :
             if previous > update_price :
                 print('still bearish, prepare to sell')
                 is_up = False
+                status_price = previous + 180000
+                print('FINALLY sell in price : ' + str(status_price))
             else :
                 print("Yepeee bullish, waiting to get more profit ...")
                 is_up = True
 
-        status_price = previous + 130000
-        print('FINALLY sell in price : '+str(status_price))
         is_buy[1] = 'False'
         is_buy[2] = status_price
         return is_buy
