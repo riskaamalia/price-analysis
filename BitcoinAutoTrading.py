@@ -22,6 +22,7 @@ def get_10seconds_price (total_loop) :
     while loop < total_loop :
         url_ticker = 'https://vip.bitcoin.co.id/api/btc_idr/ticker'
         success = False
+        response = None
         while success is False:
             try:
                 response = urlopen(url_ticker)
@@ -30,7 +31,8 @@ def get_10seconds_price (total_loop) :
             except Exception as e:
                 success = True
 
-        full_result = json.loads(response.read())['ticker']
+        get_response = response.read().decode('utf-8')
+        full_result = json.loads(get_response)['ticker']
         # print(full_result)
 
         last_price = full_result['last']
@@ -90,8 +92,9 @@ def order_buy (profit, total_loop) :
             else :
                 print("Yepeee bullish, ready to buy ...")
                 is_up = True
-            previous = update_price
 
+
+        update_price = previous + 200000
         print('FINALLY buy in price : '+str(update_price))
         is_buy[1] = 'True'
         is_buy[2] = update_price
@@ -140,8 +143,8 @@ def order_sell (profit, total_loop, buy_price) :
             else :
                 print("Yepeee bullish, waiting to get more profit ...")
                 is_up = True
-            previous = update_price
 
+        update_price = previous + 200000
         print('FINALLY sell in price : '+str(update_price))
         is_buy[1] = 'False'
         is_buy[2] = update_price
@@ -163,15 +166,15 @@ def count_mean (price_dict, loop) :
     return total / loop
 
 # for first time, I set order buy
-is_buy = order_buy(100000,5)
+is_buy = order_buy(1000000,5)
 while True :
     print('is buy : .... '+str(is_buy))
     if 'True' in is_buy[1] :
         print('waiting for selling signal ..............................')
         print('is sell : .... '+str(is_buy))
-        is_buy = order_sell(100000,5, is_buy[2])
+        is_buy = order_sell(1000000,5, is_buy[2])
     else :
         print('waiting for buying signal ..............................')
-        is_buy = order_buy(100000,5)
+        is_buy = order_buy(800000,5)
 
 # low di update jam 6 sore
