@@ -66,10 +66,11 @@ def order_buy (profit, total_loop) :
         previous = last_price
         while is_up == False :
             # stop looping until get to lowest price
+            print('GET ready to buy ...., last price average : '+str(previous))
             update_price = count_mean(get_10seconds_price(5),5)
-            print('GET ready to buy ....')
             if previous > update_price :
                 print('still bearish ...... :(')
+                previous = update_price
                 is_up = False
             else :
                 print("Yepeee bullish, ready to buy ...")
@@ -98,8 +99,8 @@ def order_sell (profit, total_loop, buy_price) :
         previous = last_price
         while is_up == True :
             # stop looping until get to highest price
+            print('GET ready to sell ...., last price average : '+str(previous))
             update_price = count_mean(get_10seconds_price(5),5)
-            print('GET ready to sell ....')
             if previous > update_price :
                 print('still bearish, prepare to sell')
                 is_up = False
@@ -108,6 +109,7 @@ def order_sell (profit, total_loop, buy_price) :
             else :
                 print("Yepeee bullish, waiting to get more profit ...")
                 is_up = True
+                previous = update_price
 
         is_buy[1] = 'False'
         is_buy[2] = status_price
