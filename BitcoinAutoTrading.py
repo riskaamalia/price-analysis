@@ -76,7 +76,7 @@ def order_buy (profit, total_loop) :
                 print("Yepeee bullish, ready to buy ...")
                 is_up = True
                 status_price = previous - 180000
-                order_api(str(datetime.now().strftime('%Y-%m-%d %H:%M:%S')),'buy',status_price)
+                order_api(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')),'buy',status_price)
                 print('FINALLY buy in price : ' + str(status_price))
 
         is_buy[1] = 'True'
@@ -107,7 +107,7 @@ def order_sell (profit, total_loop, buy_price) :
                 is_up = False
                 status_price = previous + 180000
                 print('FINALLY sell in price : ' + str(status_price))
-                order_api(str(datetime.now().strftime('%Y-%m-%d %H:%M:%S')), 'sell', status_price)
+                order_api(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')), 'sell', status_price)
             else :
                 print("Yepeee bullish, waiting to get more profit ...")
                 is_up = True
