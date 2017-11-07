@@ -19,6 +19,7 @@ def get_10seconds_price (total_loop) :
     loop = 0
     prices_dict = {}
     previous_price = 0
+    full_result = None
     while loop < total_loop :
         url_ticker = 'https://vip.bitcoin.co.id/api/btc_idr/ticker'
         success = False
@@ -39,8 +40,8 @@ def get_10seconds_price (total_loop) :
         last_time = datetime.datetime.fromtimestamp(int(full_result['server_time'])).strftime('%Y-%m-%d %H:%M:%S')
 
         if previous_price != last_price :
-            prices_dict[last_time] = last_price
-            print('Time : '+last_time+' Last Price : '+prices_dict[last_time])
+            prices_dict[loop] = last_price
+            print('Time : '+last_time+' Last Price : '+prices_dict[loop])
             loop = loop + 1
 
         sleep(5)
@@ -54,22 +55,13 @@ def get_10seconds_price (total_loop) :
 def order_buy (profit, total_loop) :
     is_buy = {}
     status_price = 0
-    last_price = 0
-    first_price = 0
     prices_dict = get_10seconds_price(total_loop)
     mean_price = count_mean(prices_dict, total_loop)
     print("mean price : "+str(mean_price))
-
-    loop = 0
-    for value in prices_dict.values() :
-        if loop == 0 :
-            first_price = int(value)
-        if loop == total_loop - 1 :
-            last_price = int(value)
-        loop = loop + 1
+    first_price = prices_dict[0]
+    last_price = prices_dict[total_loop - 1]
 
     high_price = int(prices_dict['high'])
-    lowest_price = int(prices_dict['low'])
     # prepare to buy
     if first_price < mean_price :
         print('bullish detected.. price is up wuhuuuu')
@@ -106,19 +98,12 @@ def order_buy (profit, total_loop) :
 def order_sell (profit, total_loop, buy_price) :
     status_price = buy_price
     is_buy = {}
-    last_price = 0
-    first_price = 0
     prices_dict = get_10seconds_price(total_loop)
     mean_price = count_mean(prices_dict, total_loop)
     print("mean price : "+str(mean_price))
 
-    loop = 0
-    for value in prices_dict.values() :
-        if loop == 0 :
-            first_price = int(value)
-        if loop == total_loop - 1 :
-            last_price = int(value)
-        loop = loop + 1
+    first_price = prices_dict[0]
+    last_price = prices_dict[total_loop - 1]
 
     # prepare to sell or buy
     if first_price < mean_price :
