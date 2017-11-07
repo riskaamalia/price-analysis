@@ -128,6 +128,23 @@ def count_mean (price_dict, loop) :
 
     return int(total / loop)
 
+def order_api(date,order_status,price) :
+    print('go to '+order_status+' , connect to API with price : ' + str(price))
+
+    location = 'status_order.txt'
+    with open(location) as data_file:
+        if order_status is 'sell' :
+            status = data_file.read().split('\t')[1]
+            if status is 'buy' :
+                # sell in this price
+                data_file.write(date + '\t' + order_status + '\t' + str(price))
+                print('SUCCESS place SELL in price : '+str(price))
+        else :
+            data_file.write(date+'\t'+order_status+'\t'+str(price))
+            print('SUCCESS place BUY in price : ' + str(price))
+
+    data_file.close()
+
 # for first time, I set order buy
 is_buy = [0,'False']
 while True :
