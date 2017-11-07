@@ -56,19 +56,9 @@ def order_buy (profit, total_loop) :
     is_buy = {}
     status_price = 0
     prices_dict = get_10seconds_price(total_loop)
-    mean_price = count_mean(prices_dict, total_loop)
-    print("mean price : "+str(mean_price))
-    first_price = int(prices_dict[0])
     last_price = int(prices_dict[total_loop - 1])
-
     high_price = int(prices_dict['high'])
-    # prepare to buy
-    if first_price < mean_price :
-        print('bullish detected.. price is up wuhuuuu')
-        is_up = True
-    else :
-        print('bearish detected.. price is down :(')
-        is_up = False
+    is_up = False
 
     # prepare to initialize buy
     if high_price - last_price >= profit:
@@ -96,22 +86,11 @@ def order_buy (profit, total_loop) :
     return is_buy
 
 def order_sell (profit, total_loop, buy_price) :
-    status_price = buy_price
     is_buy = {}
+    status_price = buy_price
     prices_dict = get_10seconds_price(total_loop)
-    mean_price = count_mean(prices_dict, total_loop)
-    print("mean price : "+str(mean_price))
-
-    first_price = int(prices_dict[0])
     last_price = int(prices_dict[total_loop - 1])
-
-    # prepare to sell or buy
-    if first_price < mean_price :
-        print('bullish detected.. price is up wuhuuuu')
-        is_up = True
-    else :
-        print('bearish detected.. price is down :(')
-        is_up = False
+    is_up = False
 
     # prepare to initialize sell
     if last_price - buy_price >= profit:
