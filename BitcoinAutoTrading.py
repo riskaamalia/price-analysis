@@ -132,28 +132,33 @@ def order_api(date,order_status,price) :
     print('go to '+order_status+' , connect to API with price : ' + str(price))
 
     location = 'status_order.txt'
-    with open(location) as data_file:
-        if order_status is 'sell' :
-            status = data_file.read().split('\t')[1]
-            if status is 'buy' :
-                # sell in this price
-                data_file.write(date + '\t' + order_status + '\t' + str(price))
-                print('SUCCESS place SELL in price : '+str(price))
+    data_file = open(location,'r')
+    if order_status is 'sell' :
+        status = data_file.read().split(' = ')[1]
+        if status is 'buy' :
+            # sell in this price
+            data_file.close()
+            write_file = open(location,'w')
+            write_file.write(date + ' = ' + order_status + ' = ' + str(price))
+            print('SUCCESS place SELL in price : '+str(price))
+            write_file.close()
         else :
-            data_file.write(date+'\t'+order_status+'\t'+str(price))
+            data_file.close()
+            write_file = open(location, 'w')
+            write_file.write(date+' = '+order_status+' = '+str(price))
             print('SUCCESS place BUY in price : ' + str(price))
-
-    data_file.close()
+            write_file.close()
 
 # for first time, I set order buy
-is_buy = [0,'False']
-while True :
-    if 'True' in is_buy[1] :
-        print('waiting for selling signal ..............................')
-        is_buy = order_sell(500000,5, is_buy[2])
-    else :
-        print('waiting for buying signal ..............................')
-        is_buy = order_buy(500000,5)
+# is_buy = [0,'False']
+# while True :
+#     if 'True' in is_buy[1] :
+#         print('waiting for selling signal ..............................')
+#         is_buy = order_sell(500000,5, is_buy[2])
+#     else :
+#         print('waiting for buying signal ..............................')
+#         is_buy = order_buy(500000,5)
+#
+#     print('is buy : .... ' + str(is_buy))
 
-    print('is buy : .... ' + str(is_buy))
-
+order_api('2017-08-01 12:45:34','buy',100000000)
