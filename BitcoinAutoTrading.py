@@ -13,7 +13,6 @@ from urllib.request import urlopen
 from time import sleep
 import datetime
 
-status_price = 0
 # get price from vip.bitoin.co.id every 10 sec
 def get_10seconds_price (total_loop) :
 
@@ -54,6 +53,7 @@ def get_10seconds_price (total_loop) :
 
 def order_buy (profit, total_loop) :
     is_buy = {}
+    status_price = 0
     last_price = 0
     first_price = 0
     prices_dict = get_10seconds_price(total_loop)
@@ -82,7 +82,6 @@ def order_buy (profit, total_loop) :
     if high_price - last_price >= profit:
         # go buy in this price
         previous = last_price
-        update_price = last_price
         while is_up == False :
             # stop looping until get to lowest price
             update_price = count_mean(get_10seconds_price(5),5)
@@ -101,10 +100,11 @@ def order_buy (profit, total_loop) :
         return is_buy
 
     is_buy[1] = 'False'
-    is_buy[2] = last_price
+    is_buy[2] = status_price
     return is_buy
 
 def order_sell (profit, total_loop, buy_price) :
+    status_price = buy_price
     is_buy = {}
     last_price = 0
     first_price = 0
@@ -150,30 +150,27 @@ def order_sell (profit, total_loop, buy_price) :
         return is_buy
 
     is_buy[1] = 'True'
-    is_buy[2] = last_price
+    is_buy[2] = status_price
     return is_buy
 
 def count_mean (price_dict, loop) :
     total = 0
-    l = 0
-    values = price_dict.values()
-    for value in values :
-        if l < loop :
-            total = total + int(value)
-            l = l + 1
+    values = price_dict.keys()
+    for key in values :
+        if key is not 'high' and key is not 'low' :
+            total = total + int(price_dict[key])
 
     return total / loop
 
 # for first time, I set order buy
-is_buy = order_buy(800000,5)
+is_buy = [0,'False']
 while True :
-    print('is buy : .... '+str(is_buy))
     if 'True' in is_buy[1] :
         print('waiting for selling signal ..............................')
-        print('is sell : .... '+str(is_buy))
-        is_buy = order_sell(800000,5, is_buy[2])
+        is_buy = order_sell(500000,5, is_buy[2])
     else :
         print('waiting for buying signal ..............................')
-        is_buy = order_buy(800000,5)
+        is_buy = order_buy(500000,5)
 
-# low di update jam 6 sore
+    print('is buy : .... ' + str(is_buy))
+
