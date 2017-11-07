@@ -76,6 +76,7 @@ def order_buy (profit, total_loop) :
                 print("Yepeee bullish, ready to buy ...")
                 is_up = True
                 status_price = previous - 180000
+                order_api(str(datetime.now().strftime('%Y-%m-%d')),'buy',status_price)
                 print('FINALLY buy in price : ' + str(status_price))
 
         is_buy[1] = 'True'
@@ -106,6 +107,7 @@ def order_sell (profit, total_loop, buy_price) :
                 is_up = False
                 status_price = previous + 180000
                 print('FINALLY sell in price : ' + str(status_price))
+                order_api(str(datetime.now().strftime('%Y-%m-%d')), 'sell', status_price)
             else :
                 print("Yepeee bullish, waiting to get more profit ...")
                 is_up = True
@@ -133,32 +135,35 @@ def order_api(date,order_status,price) :
 
     location = 'status_order.txt'
     data_file = open(location,'r')
-    if order_status is 'sell' :
-        status = data_file.read().split(' = ')[1]
-        if status is 'buy' :
+    if order_status == 'sell' :
+        status = str(data_file.read().split(' = ')[1])
+        if status == 'buy' :
+            # check status buy first in real API
+
+            
             # sell in this price
             data_file.close()
             write_file = open(location,'w')
             write_file.write(date + ' = ' + order_status + ' = ' + str(price))
             print('SUCCESS place SELL in price : '+str(price))
             write_file.close()
-        else :
-            data_file.close()
-            write_file = open(location, 'w')
-            write_file.write(date+' = '+order_status+' = '+str(price))
-            print('SUCCESS place BUY in price : ' + str(price))
-            write_file.close()
+    else :
+        data_file.close()
+        write_file = open(location, 'w')
+        write_file.write(date+' = '+order_status+' = '+str(price))
+        print('SUCCESS place BUY in price : ' + str(price))
+        write_file.close()
 
 # for first time, I set order buy
-# is_buy = [0,'False']
-# while True :
-#     if 'True' in is_buy[1] :
-#         print('waiting for selling signal ..............................')
-#         is_buy = order_sell(500000,5, is_buy[2])
-#     else :
-#         print('waiting for buying signal ..............................')
-#         is_buy = order_buy(500000,5)
-#
-#     print('is buy : .... ' + str(is_buy))
+is_buy = [0,'False']
+while True :
+    if 'True' in is_buy[1] :
+        print('waiting for selling signal ..............................')
+        is_buy = order_sell(500000,5, is_buy[2])
+    else :
+        print('waiting for buying signal ..............................')
+        is_buy = order_buy(500000,5)
 
-order_api('2017-08-01 12:45:34','buy',100000000)
+    print('is buy : .... ' + str(is_buy))
+
+# order_api('2017-08-01 12:45:34','sell',100000000)
