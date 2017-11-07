@@ -58,8 +58,8 @@ def order_buy (profit, total_loop) :
     prices_dict = get_10seconds_price(total_loop)
     mean_price = count_mean(prices_dict, total_loop)
     print("mean price : "+str(mean_price))
-    first_price = prices_dict[0]
-    last_price = prices_dict[total_loop - 1]
+    first_price = int(prices_dict[0])
+    last_price = int(prices_dict[total_loop - 1])
 
     high_price = int(prices_dict['high'])
     # prepare to buy
@@ -102,8 +102,8 @@ def order_sell (profit, total_loop, buy_price) :
     mean_price = count_mean(prices_dict, total_loop)
     print("mean price : "+str(mean_price))
 
-    first_price = prices_dict[0]
-    last_price = prices_dict[total_loop - 1]
+    first_price = int(prices_dict[0])
+    last_price = int(prices_dict[total_loop - 1])
 
     # prepare to sell or buy
     if first_price < mean_price :
@@ -145,7 +145,7 @@ def count_mean (price_dict, loop) :
         if key is not 'high' and key is not 'low' :
             total = total + int(price_dict[key])
 
-    return total / loop
+    return int(total / loop)
 
 # for first time, I set order buy
 is_buy = [0,'False']
