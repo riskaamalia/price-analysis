@@ -93,62 +93,65 @@ class Trading :
         buy_price = 1
 
         while True :
-            logging.info('get 5 last price')
-            get_prices = self.get_10seconds_price(5)
-            average_price = get_prices['average']
-            first_price = float(get_prices[0])
-            logging.info('average price : '+str(average_price)+" | first price : "+str(first_price))
+            try :
+                logging.info('get 5 last price')
+                get_prices = self.get_10seconds_price(5)
+                average_price = get_prices['average']
+                first_price = float(get_prices[0])
+                logging.info('average price : '+str(average_price)+" | first price : "+str(first_price))
 
-            if average_price < first_price:
-                logging.info("price is DOWN")
-                is_up = False
-            else:
-                logging.info ("price is UP")
-                is_up = True
+                if average_price < first_price:
+                    logging.info("price is DOWN")
+                    is_up = False
+                else:
+                    logging.info ("price is UP")
+                    is_up = True
 
-            # get ready to buy or sell in different module
-            # check open order from api
-            orders = akun.openOrders()['return']['orders']
-            if self.order_status == True and len(orders) == 0 :
-                if order_buy == False and is_up == True :
-                    if average_price > float(get_prices[4]) :
-                        buy_price = int(average_price) + 100000
-                    else:
-                        buy_price = int(get_prices[4]) + 100000
+                # get ready to buy or sell in different module
+                # check open order from api
+                orders = akun.openOrders()['return']['orders']
+                if self.order_status == True and len(orders) == 0 :
+                    if order_buy == False and is_up == True :
+                        if average_price > float(get_prices[4]) :
+                            buy_price = int(average_price) + 100000
+                        else:
+                            buy_price = int(get_prices[4]) + 100000
 
 
-                    akun.trade('buy',my_asset['idr'],str(buy_price))
-                    logging.info("#buy in price : "+str(buy_price))
-                    self.order_price = buy_price
-                    order_buy = True
-                elif is_up == False and order_buy == True:
-                    if average_price > float(get_prices[4]) :
-                        average_price = average_price + 100000
-                    else:
-                        average_price = float(get_prices[4]) + 100000
+                        akun.trade('buy',my_asset['idr'],str(buy_price))
+                        logging.info("#buy in price : "+str(buy_price))
+                        self.order_price = buy_price
+                        order_buy = True
+                    elif is_up == False and order_buy == True:
+                        if average_price > float(get_prices[4]) :
+                            average_price = average_price + 100000
+                        else:
+                            average_price = float(get_prices[4]) + 100000
 
-                    if average_price > buy_price :
-                        if buy_price < 100 :
-                            buy_price = average_price
-                        aset_sold = float(average_price/buy_price) * float(my_asset['btc'])
-                    else:
-                        aset_sold = my_asset['btc']
+                        if average_price > buy_price :
+                            if buy_price < 100 :
+                                buy_price = average_price
+                            aset_sold = float(average_price/buy_price) * float(my_asset['btc'])
+                        else:
+                            aset_sold = my_asset['btc']
 
-                    akun.trade('sell',my_asset['btc'],str(float(average_price) * float(aset_sold)))
-                    logging.info("#sell in price : "+str(average_price))
-                    buy_price = 0
-                    order_buy = False
+                        akun.trade('sell',my_asset['btc'],str(float(average_price) * float(aset_sold)))
+                        logging.info("#sell in price : "+str(average_price))
+                        buy_price = 0
+                        order_buy = False
 
-                assets = akun.getInfo()
-                my_asset['idr'] = assets['return']['balance']['idr']
-                my_asset['btc'] = assets['return']['balance']['btc']
-            else :
-                logging.info('waiting for pending order execute')
+                    assets = akun.getInfo()
+                    my_asset['idr'] = assets['return']['balance']['idr']
+                    my_asset['btc'] = assets['return']['balance']['btc']
+                else :
+                    logging.info('waiting for pending order execute')
 
-            if order_buy == False :
-                logging.info("waiting for BUYING , MY ASET : "+str(my_asset))
-            else:
-                logging.info("waiting for SELLING , MY ASET : "+str(my_asset))
+                if order_buy == False :
+                    logging.info("waiting for BUYING , MY ASET : "+str(my_asset))
+                else:
+                    logging.info("waiting for SELLING , MY ASET : "+str(my_asset))
+            except Exception as e :
+                logging.error(str(e))
 
 
 # test API
