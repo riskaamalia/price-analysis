@@ -88,7 +88,7 @@ class Trading :
             order_buy = True
         else:
             order_buy = False
-        buy_price = 0
+        buy_price = 1
 
         while True :
             logging.info('get 10 last price')
