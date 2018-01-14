@@ -113,9 +113,9 @@ class Trading :
                 if self.order_status == True and len(orders) == 0 :
                     if order_buy == False and is_up == True :
                         if average_price > float(get_prices[4]) :
-                            buy_price = int(average_price) + 100000
+                            buy_price = int(average_price) + 200000
                         else:
-                            buy_price = int(get_prices[4]) + 100000
+                            buy_price = int(get_prices[4]) + 200000
 
 
                         akun.trade('buy',my_asset['idr'],str(buy_price))
@@ -124,21 +124,19 @@ class Trading :
                         order_buy = True
                     elif is_up == False and order_buy == True:
                         if average_price > float(get_prices[4]) :
-                            average_price = average_price + 100000
+                            average_price = average_price + 200000
                         else:
-                            average_price = float(get_prices[4]) + 100000
+                            average_price = float(get_prices[4]) + 200000
 
                         if average_price > buy_price :
                             if buy_price < 100 :
                                 buy_price = average_price
                             aset_sold = float(average_price/buy_price) * float(my_asset['btc'])
-                        else:
-                            aset_sold = my_asset['btc']
 
-                        akun.trade('sell',my_asset['btc'],str(float(average_price) * float(aset_sold)))
-                        logging.info("#sell in price : "+str(average_price))
-                        buy_price = 0
-                        order_buy = False
+                            akun.trade('sell',my_asset['btc'],str(float(average_price) * float(aset_sold)))
+                            logging.info("#sell in price : "+str(average_price))
+                            buy_price = 0
+                            order_buy = False
 
                     assets = akun.getInfo()
                     my_asset['idr'] = assets['return']['balance']['idr']
