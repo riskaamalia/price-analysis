@@ -113,7 +113,7 @@ while True :
             logging.info("#buy in price : "+str(buy_price))
             order_price = buy_price
             order_buy = True
-        elif is_up == False:
+        elif is_up == False and order_buy == True:
             if average_price > int(get_prices[9]) :
                 average_price = average_price + 40000
             else:
