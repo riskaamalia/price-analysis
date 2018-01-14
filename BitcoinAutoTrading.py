@@ -82,10 +82,12 @@ class Trading :
         prices_dict['low'] = full_result['low']
         return prices_dict
 
-    def execute (self) :
+    def execute (self,my_asset) :
         # start from rupiah
-        my_asset = {'idr':10000000,'btc':0}
-        order_buy = False
+        if my_asset['idr'] < 1000 :
+            order_buy = False
+        else:
+            order_buy = True
         buy_price = 0
 
         while True :
@@ -140,4 +142,5 @@ class Trading :
                 logging.info("waiting for SELLING , MY ASET : "+str(my_asset))
 
 trading = Trading()
-trading.execute()
+my_asset = {'idr':0,'btc':0.7}
+trading.execute(my_asset)
