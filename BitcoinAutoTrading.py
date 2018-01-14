@@ -103,13 +103,22 @@ while True :
 
         # get ready to buy or sell in different module
         if order_buy == False :
-            buy_price = average_price
+            if average_price > int(get_prices[9]) :
+                buy_price = average_price + 40000
+            else:
+                buy_price = int(get_prices[9]) + 40000
+                
             my_asset['btc'] = float(my_asset['idr']/buy_price)
             my_asset['idr'] = 0
             logging.info("#buy in price : "+str(buy_price))
             count = 0
             order_buy = True
         else:
+            if average_price > int(get_prices[9]) :
+                average_price = average_price + 40000
+            else:
+                average_price = int(get_prices[9]) + 40000
+
             if average_price < buy_price :
                 aset_sold = float((average_price/buy_price) * my_asset['btc'])
             else:
