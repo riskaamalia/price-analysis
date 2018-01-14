@@ -64,7 +64,7 @@ def get_10seconds_price(total_loop):
             loop = loop + 1
             # for pending order
             if order_price != 0 :
-                if last_price <= order_price :
+                if int(last_price) >= order_price :
                     order_status = True
                 else:
                     order_status = False
