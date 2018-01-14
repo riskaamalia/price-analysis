@@ -85,9 +85,9 @@ class Trading :
     def execute (self,my_asset) :
         # start from rupiah
         if my_asset['idr'] < 1000 :
-            order_buy = False
-        else:
             order_buy = True
+        else:
+            order_buy = False
         buy_price = 0
 
         while True :
