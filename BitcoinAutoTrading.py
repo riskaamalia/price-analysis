@@ -104,8 +104,8 @@ while True :
         # get ready to buy or sell in different module
         if order_buy == False :
             # biar ga buy atau sell instant
-            if average_price < get_prices[4] :
-                buy_price = get_prices[4] + 100000
+            if average_price < int(get_prices[4]) :
+                buy_price = int(get_prices[4]) + 100000
             else:
                 buy_price = average_price + 100000
 
@@ -116,7 +116,7 @@ while True :
             order_buy = True
         else:
             # biar ga buy atau sell instant
-            if average_price < get_prices[4] :
+            if average_price < int(get_prices[4]) :
                 average_price = buy_price[4] + 100000
             else:
                 average_price = average_price + 100000
