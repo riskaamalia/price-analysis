@@ -125,7 +125,7 @@ while True :
                 aset_sold = my_asset['btc']
 
             my_asset['btc'] = my_asset['btc'] - aset_sold
-            my_asset['idr'] = average_price
+            my_asset['idr'] = average_price * my_asset['btc']
             logging.info("#sell in price : "+str(average_price))
             count = 0
             buy_price = 0
