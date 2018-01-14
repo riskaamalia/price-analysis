@@ -84,8 +84,8 @@ buy_price = 0
 
 # just for order buy
 while True :
-    logging.info('get 5 last price')
-    get_prices = get_10seconds_price(5)
+    logging.info('get 10 last price')
+    get_prices = get_10seconds_price(10)
     average_price = get_prices['average']
     first_price = int(get_prices[0])
     logging.info('average price : '+str(average_price)+" | first price : "+str(first_price))
@@ -103,24 +103,13 @@ while True :
 
         # get ready to buy or sell in different module
         if order_buy == False :
-            # biar ga buy atau sell instant
-            if average_price < int(get_prices[4]) :
-                buy_price = int(get_prices[4]) + 100000
-            else:
-                buy_price = average_price + 100000
-
+            buy_price = average_price
             my_asset['btc'] = float(my_asset['idr']/buy_price)
             my_asset['idr'] = 0
             logging.info("#buy in price : "+str(buy_price))
             count = 0
             order_buy = True
         else:
-            # biar ga buy atau sell instant
-            if average_price < int(get_prices[4]) :
-                average_price = buy_price[4] + 100000
-            else:
-                average_price = average_price + 100000
-
             if average_price < buy_price :
                 aset_sold = float((average_price/buy_price) * my_asset['btc'])
             else:
