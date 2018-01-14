@@ -12,10 +12,6 @@ import json
 from urllib.request import urlopen
 from time import sleep
 import datetime
-import sys
-import logging
-
-# set up logging
 import logging
 from logging.handlers import TimedRotatingFileHandler
 
@@ -32,6 +28,8 @@ def setup_logging(log_filename):
     logging.getLogger('').addHandler(file_handler)
 
 setup_logging('history.log')
+order_price = 0
+order_status = True
 
 # get price from vip.bitoin.co.id every 10 sec
 def get_10seconds_price(total_loop):
@@ -64,6 +62,12 @@ def get_10seconds_price(total_loop):
             total_price = total_price + int(last_price)
             logging.info('Time : ' + last_time + ' Last Price : ' + prices_dict[loop])
             loop = loop + 1
+            # for pending order
+            if order_price != 0 :
+                if last_price <= order_price :
+                    order_status = True
+                else:
+                    order_status = False
 
         sleep(5)
 
@@ -111,9 +115,10 @@ while True :
             my_asset['btc'] = float(my_asset['idr']/buy_price)
             my_asset['idr'] = 0
             logging.info("#buy in price : "+str(buy_price))
+            order_price = buy_price
             count = 0
             order_buy = True
-        else:
+        elif order_status == True:
             if average_price > int(get_prices[9]) :
                 average_price = average_price + 40000
             else:
@@ -130,4 +135,7 @@ while True :
             count = 0
             buy_price = 0
             order_buy = False
+        else :
+            logging.info('waiting for pending order execute')
+
     logging.info("MY ASET : "+str(my_asset))
