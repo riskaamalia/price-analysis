@@ -112,9 +112,9 @@ class Trading :
             if self.order_status == True and len(orders) == 0 :
                 if order_buy == False and is_up == True :
                     if average_price > float(get_prices[4]) :
-                        buy_price = average_price + 40000
+                        buy_price = int(average_price) + 40000
                     else:
-                        buy_price = float(get_prices[4]) + 40000
+                        buy_price = int(get_prices[4]) + 40000
 
 
                     akun.trade('buy',my_asset['idr'],str(buy_price))
