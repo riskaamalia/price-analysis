@@ -124,6 +124,8 @@ class Trading :
                         average_price = int(get_prices[4]) + 40000
 
                     if average_price > buy_price :
+                        if buy_price < 100 :
+                            buy_price = average_price
                         aset_sold = float((average_price/buy_price) * my_asset['btc'])
                     else:
                         aset_sold = my_asset['btc']
