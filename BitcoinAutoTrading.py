@@ -13,6 +13,7 @@ from urllib.request import urlopen
 from time import sleep
 import datetime
 import logging
+from vipbtc import trade
 from logging.handlers import TimedRotatingFileHandler
 
 class Trading :
@@ -21,6 +22,7 @@ class Trading :
         self.setup_logging('history.log')
         self.order_price = 0
         self.order_status = True
+        self.akun = None
 
     def setup_logging(self,log_filename):
 
@@ -62,12 +64,12 @@ class Trading :
 
             if previous_price != last_price:
                 prices_dict[loop] = last_price
-                total_price = total_price + int(last_price)
+                total_price = total_price + float(last_price)
                 logging.info('Time : ' + last_time + ' Last Price : ' + prices_dict[loop])
                 loop = loop + 1
                 # for pending order
                 if self.order_price != 0 :
-                    if int(last_price) >= self.order_price :
+                    if float(last_price) >= self.order_price :
                         order_status = True
                     else:
                         order_status = False
@@ -82,19 +84,19 @@ class Trading :
         prices_dict['low'] = full_result['low']
         return prices_dict
 
-    def execute (self,my_asset) :
-        # start from rupiah
-        if my_asset['idr'] < 1000 :
+    def execute (self,my_asset, akun) :
+        self.akun = akun
+        if my_asset['idr'] < 1 :
             order_buy = True
         else:
             order_buy = False
         buy_price = 1
 
         while True :
-            logging.info('get 10 last price')
+            logging.info('get 5 last price')
             get_prices = self.get_10seconds_price(5)
             average_price = get_prices['average']
-            first_price = int(get_prices[0])
+            first_price = float(get_prices[0])
             logging.info('average price : '+str(average_price)+" | first price : "+str(first_price))
 
             if average_price < first_price:
@@ -105,23 +107,25 @@ class Trading :
                 is_up = True
 
             # get ready to buy or sell in different module
-            if self.order_status == True :
+            # check open order from api
+            orders = akun.openOrders()['return']['orders']
+            if self.order_status == True and len(orders) == 0 :
                 if order_buy == False and is_up == True :
-                    if average_price > int(get_prices[4]) :
+                    if average_price > float(get_prices[4]) :
                         buy_price = average_price + 40000
                     else:
-                        buy_price = int(get_prices[4]) + 40000
+                        buy_price = float(get_prices[4]) + 40000
 
-                    my_asset['btc'] = float(my_asset['idr']/buy_price)
-                    my_asset['idr'] = 0
+
+                    akun.trade('buy',my_asset['idr'],buy_price)
                     logging.info("#buy in price : "+str(buy_price))
                     self.order_price = buy_price
                     order_buy = True
                 elif is_up == False and order_buy == True:
-                    if average_price > int(get_prices[4]) :
+                    if average_price > float(get_prices[4]) :
                         average_price = average_price + 40000
                     else:
-                        average_price = int(get_prices[4]) + 40000
+                        average_price = float(get_prices[4]) + 40000
 
                     if average_price > buy_price :
                         if buy_price < 100 :
@@ -130,11 +134,13 @@ class Trading :
                     else:
                         aset_sold = my_asset['btc']
 
-                    my_asset['btc'] = my_asset['btc'] - aset_sold
-                    my_asset['idr'] = average_price * aset_sold
+                    akun.trade('sell',my_asset['btc'],average_price * aset_sold)
                     logging.info("#sell in price : "+str(average_price))
                     buy_price = 0
                     order_buy = False
+
+                my_asset['idr'] = akun['return']['balance']['idr']
+                my_asset['btc'] = akun['return']['balance']['btc']
             else :
                 logging.info('waiting for pending order execute')
 
@@ -143,6 +149,14 @@ class Trading :
             else:
                 logging.info("waiting for SELLING , MY ASET : "+str(my_asset))
 
+
+# test API
+akun = trade.TradeAPI(key, secret)
+
+assets = akun.getInfo()
+idr = assets['return']['balance']['idr']
+btc = assets['return']['balance']['btc']
+
 trading = Trading()
-my_asset = {'idr':0,'btc':0.7}
-trading.execute(my_asset)
+my_asset = {'idr':float(idr),'btc':float(btc)}
+trading.execute(my_asset, akun)
