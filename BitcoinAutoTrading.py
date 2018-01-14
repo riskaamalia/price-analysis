@@ -117,7 +117,7 @@ class Trading :
                         buy_price = float(get_prices[4]) + 40000
 
 
-                    akun.trade('buy',my_asset['idr'],buy_price)
+                    akun.trade('buy',my_asset['idr'],str(buy_price))
                     logging.info("#buy in price : "+str(buy_price))
                     self.order_price = buy_price
                     order_buy = True
@@ -134,7 +134,7 @@ class Trading :
                     else:
                         aset_sold = my_asset['btc']
 
-                    akun.trade('sell',my_asset['btc'],average_price * aset_sold)
+                    akun.trade('sell',my_asset['btc'],str(float(average_price) * float(aset_sold)))
                     logging.info("#sell in price : "+str(average_price))
                     buy_price = 0
                     order_buy = False
