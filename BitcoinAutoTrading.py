@@ -130,7 +130,7 @@ class Trading :
                     if average_price > buy_price :
                         if buy_price < 100 :
                             buy_price = average_price
-                        aset_sold = float((average_price/buy_price) * my_asset['btc'])
+                        aset_sold = float(average_price/buy_price) * float(my_asset['btc'])
                     else:
                         aset_sold = my_asset['btc']
 
@@ -139,8 +139,9 @@ class Trading :
                     buy_price = 0
                     order_buy = False
 
-                my_asset['idr'] = akun['return']['balance']['idr']
-                my_asset['btc'] = akun['return']['balance']['btc']
+                assets = akun.getInfo()
+                my_asset['idr'] = assets['return']['balance']['idr']
+                my_asset['btc'] = assets['return']['balance']['btc']
             else :
                 logging.info('waiting for pending order execute')
 
