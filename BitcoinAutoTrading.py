@@ -90,7 +90,7 @@ class Trading :
 
         while True :
             logging.info('get 10 last price')
-            get_prices = self.get_10seconds_price(10)
+            get_prices = self.get_10seconds_price(5)
             average_price = get_prices['average']
             first_price = int(get_prices[0])
             logging.info('average price : '+str(average_price)+" | first price : "+str(first_price))
@@ -105,10 +105,10 @@ class Trading :
             # get ready to buy or sell in different module
             if self.order_status == True :
                 if order_buy == False and is_up == True :
-                    if average_price > int(get_prices[9]) :
+                    if average_price > int(get_prices[4]) :
                         buy_price = average_price + 40000
                     else:
-                        buy_price = int(get_prices[9]) + 40000
+                        buy_price = int(get_prices[4]) + 40000
 
                     my_asset['btc'] = float(my_asset['idr']/buy_price)
                     my_asset['idr'] = 0
@@ -116,28 +116,25 @@ class Trading :
                     self.order_price = buy_price
                     order_buy = True
                 elif is_up == False and order_buy == True:
-                    if average_price > int(get_prices[9]) :
+                    if average_price > int(get_prices[4]) :
                         average_price = average_price + 40000
                     else:
-                        average_price = int(get_prices[9]) + 40000
+                        average_price = int(get_prices[4]) + 40000
 
-                    if average_price < buy_price :
-                        aset_sold = float((average_price/buy_price) * my_asset['btc'])
-                    else:
+                    if average_price > buy_price :
                         aset_sold = my_asset['btc']
-
-                    my_asset['btc'] = my_asset['btc'] - aset_sold
-                    my_asset['idr'] = average_price * aset_sold
-                    logging.info("#sell in price : "+str(average_price))
-                    buy_price = 0
-                    order_buy = False
+                        my_asset['btc'] = my_asset['btc'] - aset_sold
+                        my_asset['idr'] = average_price * aset_sold
+                        logging.info("#sell in price : "+str(average_price))
+                        buy_price = 0
+                        order_buy = False
             else :
                 logging.info('waiting for pending order execute')
 
             if order_buy == False :
-                logging.info("waiting for SELLING , MY ASET : "+str(my_asset))
-            else:
                 logging.info("waiting for BUYING , MY ASET : "+str(my_asset))
+            else:
+                logging.info("waiting for SELLING , MY ASET : "+str(my_asset))
 
 trading = Trading()
 trading.execute()
