@@ -82,7 +82,6 @@ def get_10seconds_price(total_loop):
 # start from rupiah
 my_asset = {'idr':10000000,'btc':0}
 is_up = False
-count = 0
 order_buy = False
 buy_price = 0
 
@@ -94,31 +93,27 @@ while True :
     first_price = int(get_prices[0])
     logging.info('average price : '+str(average_price)+" | first price : "+str(first_price))
 
-    if average_price < first_price and count != 2:
+    if average_price < first_price:
         logging.info("price is DOWN")
         is_up = False
-        count = count + 1
     else:
-        if count == 2 :
-            logging.info("#two times, just buy it")
-        else:
-            logging.info ("price is UP")
-            is_up = True
+        logging.info ("price is UP")
+        is_up = True
 
-        # get ready to buy or sell in different module
-        if order_buy == False :
+    # get ready to buy or sell in different module
+    if order_status == True :
+        if order_buy == False and is_up == True :
             if average_price > int(get_prices[9]) :
                 buy_price = average_price + 40000
             else:
                 buy_price = int(get_prices[9]) + 40000
-                
+
             my_asset['btc'] = float(my_asset['idr']/buy_price)
             my_asset['idr'] = 0
             logging.info("#buy in price : "+str(buy_price))
             order_price = buy_price
-            count = 0
             order_buy = True
-        elif order_status == True:
+        elif is_up == False:
             if average_price > int(get_prices[9]) :
                 average_price = average_price + 40000
             else:
@@ -132,10 +127,12 @@ while True :
             my_asset['btc'] = my_asset['btc'] - aset_sold
             my_asset['idr'] = average_price * aset_sold
             logging.info("#sell in price : "+str(average_price))
-            count = 0
             buy_price = 0
             order_buy = False
-        else :
-            logging.info('waiting for pending order execute')
+    else :
+        logging.info('waiting for pending order execute')
 
-    logging.info("MY ASET : "+str(my_asset))
+    if order_buy == False :
+        logging.info("waiting for SELLING , MY ASET : "+str(my_asset))
+    else:
+        logging.info("waiting for BUYING , MY ASET : "+str(my_asset))
