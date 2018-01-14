@@ -122,12 +122,15 @@ class Trading :
                         average_price = int(get_prices[4]) + 40000
 
                     if average_price > buy_price :
+                        aset_sold = float((average_price/buy_price) * my_asset['btc'])
+                    else:
                         aset_sold = my_asset['btc']
-                        my_asset['btc'] = my_asset['btc'] - aset_sold
-                        my_asset['idr'] = average_price * aset_sold
-                        logging.info("#sell in price : "+str(average_price))
-                        buy_price = 0
-                        order_buy = False
+
+                    my_asset['btc'] = my_asset['btc'] - aset_sold
+                    my_asset['idr'] = average_price * aset_sold
+                    logging.info("#sell in price : "+str(average_price))
+                    buy_price = 0
+                    order_buy = False
             else :
                 logging.info('waiting for pending order execute')
 
